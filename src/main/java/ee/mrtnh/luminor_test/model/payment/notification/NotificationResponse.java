@@ -1,5 +1,6 @@
 package ee.mrtnh.luminor_test.model.payment.notification;
 
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
@@ -12,6 +13,7 @@ import static javax.persistence.GenerationType.IDENTITY;
 
 @NoArgsConstructor
 @Setter
+@Getter
 @Entity
 @ToString
 public class NotificationResponse {

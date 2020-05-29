@@ -10,7 +10,8 @@ import org.springframework.stereotype.Component;
 @PropertySources({
         @PropertySource("/properties/application.properties"),
         @PropertySource("/properties/actuator.properties"),
-        @PropertySource("/properties/db.properties"),
+        @PropertySource("/properties/datasource.properties"),
+        @PropertySource("/properties/h2-console.properties"),
         @PropertySource("/properties/notification.properties")
 })
 public class PropertiesLoader {
@@ -20,3 +21,4 @@ public class PropertiesLoader {
         return new PropertySourcesPlaceholderConfigurer();
     }
 }
+

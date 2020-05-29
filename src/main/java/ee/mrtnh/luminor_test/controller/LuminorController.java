@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 @RestController
@@ -33,7 +34,7 @@ public class LuminorController {
     QueryService queryService;
 
     @PostMapping("/createPayment")
-    public Payment createPayment(@RequestBody @Valid Payment payment, BindingResult bindingResult) {
+    public Payment createPayment(@RequestBody @Valid Payment payment, BindingResult bindingResult, HttpServletRequest request) {
         log.info("Call for payment creation");
         log.info(payment.toString());
 
@@ -41,7 +42,7 @@ public class LuminorController {
             log.error("Constraint violation"); // TODO: send readable error message
             return null;
         }
-
+        paymentService.logClientCountry(request);
         Payment response = paymentService.processPayment(payment);
         log.info("Sending response: " + response);
         return response;

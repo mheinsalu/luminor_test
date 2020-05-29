@@ -52,3 +52,12 @@ Each client should be authenticated. Only authenticated clients can use services
 5.
 Request validation in controller (@Valid). Occasionally works, often throws no errors for invalid requests. Don't know why.
 
+6.
+Testing
+PaymentType repos don't have custom methods so I wrote no tests
+
+PaymentServiceTest: not sure what to test here or if I should test anything.
+addTimeAndUuidToPayment is already tested in model. Repo saves are Jpa defaults. Controller won't pass in invalid instances (@Valid)
+
+
+

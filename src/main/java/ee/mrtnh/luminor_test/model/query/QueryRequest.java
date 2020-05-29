@@ -1,12 +1,13 @@
 package ee.mrtnh.luminor_test.model.query;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.lang.Nullable;
 
 import javax.validation.constraints.NotNull;
 
 @NoArgsConstructor
+@AllArgsConstructor
 @Getter
 public class QueryRequest {
 

@@ -4,6 +4,7 @@ import ee.mrtnh.luminor_test.model.payment.notification.NotificationRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
@@ -12,7 +13,9 @@ import java.util.InputMismatchException;
 
 @Component
 @Slf4j
-public class NotificationClient {
+public class Client {
+
+    // TODO: client methods currently always return false
 
     @Value("${notification.url}")
     String notificationURL;
@@ -59,10 +62,30 @@ public class NotificationClient {
     }
 
     private HttpHeaders createHeaders() {
-        log.info("Creating Http headers for Notification Client");
+        log.info("Creating Http headers for Client");
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
         return headers;
+    }
+
+    @Async
+    public boolean sendIp(String ip) {
+        try {
+            String requestUrl = "http://www.geoplugin.net/json.gp?ip=" + ip;
+
+            HttpHeaders headers = createHeaders();
+            // HttpEntity<String>: To get result as String.
+            HttpEntity<String> entity = new HttpEntity<>(headers);
+            RestTemplate restTemplate = new RestTemplate();
+            // Send request with GET method and Headers.
+            log.info("Sending IP");
+            ResponseEntity<String> response = restTemplate.exchange(requestUrl, HttpMethod.GET, entity, String.class);
+            log.info("IP sent. Response is " + response);
+            return true;
+        } catch (Exception e) {
+            log.error("Could not send IP to location service");
+        }
+        return false;
     }
 }

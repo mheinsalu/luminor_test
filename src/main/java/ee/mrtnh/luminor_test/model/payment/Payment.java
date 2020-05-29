@@ -10,7 +10,6 @@ import lombok.extern.slf4j.Slf4j;
 
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.Inheritance;
 import javax.persistence.MappedSuperclass;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
@@ -23,6 +22,7 @@ import static javax.persistence.GenerationType.IDENTITY;
 @Slf4j
 @ToString
 @Getter
+@Setter
 @NoArgsConstructor
 @MappedSuperclass
 //@Inheritance
@@ -51,7 +51,6 @@ public abstract class Payment {
 
     String creationDate;
     String uuid;
-    @Setter
     Double cancellationFee;
 
     public Payment(double amount, String currency, String debtorIban, String creditorIban) {

@@ -54,9 +54,9 @@ public class CancellationService {
     }
 
     private double findPaymentAcrossTypeTablesAndCancel(String uuid, LocalDateTime cancellationTime) {
-        PaymentType1 payment1 = type1Repository.findByUuid(uuid);
         String paymentDateTimeString = null;
 
+        PaymentType1 payment1 = type1Repository.findByUuid(uuid);
         if (payment1 != null) {
             paymentDateTimeString = payment1.getCreationDate(); // TODO: check for null?
             LocalDateTime paymentDateTime = LocalDateTime.parse(paymentDateTimeString, dateTimeFormatter);
