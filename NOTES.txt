@@ -20,8 +20,8 @@ c. Query by uuid
 
 d. Query all with optional filters. Sample query returns uuids of payments that are not cancelled and whose amount is [100, 200]
 {
-	"largerThanAmountFilter":100
-	"smallerThanAmountFilter":200
+	"lowerLimit":100,
+	"upperLimit":200
 }
 
 2.
@@ -50,14 +50,19 @@ Security:
 Each client should be authenticated. Only authenticated clients can use services. Client can cancel only their own payments. Client can query only their own payments.
 
 5.
-Request validation in controller (@Valid). Occasionally works, often throws no errors for invalid requests. Don't know why.
+Request validation in controller (@Valid). Occasionally works, often throws no errors for invalid requests (currency violation). Don't know why.
 
 6.
 Testing
 PaymentType repos don't have custom methods so I wrote no tests
 
-PaymentServiceTest: not sure what to test here or if I should test anything.
-addTimeAndUuidToPayment is already tested in model. Repo saves are Jpa defaults. Controller won't pass in invalid instances (@Valid)
+PaymentServiceTest: Can't test private methods. Is there anything to test (composed of tested methods)?
+addTimeAndUuidToPayment is already tested in model tests class. Repo saves are Jpa defaults. Controller won't pass in invalid instances (@Valid)
+
+Requests/testing also performed with Postman
+
+7.
+Static code analysis performed with IntelliJ's Spotbugs plugin
 
 
 

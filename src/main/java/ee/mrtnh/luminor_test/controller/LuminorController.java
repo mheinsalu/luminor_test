@@ -12,7 +12,6 @@ import ee.mrtnh.luminor_test.service.PaymentService;
 import ee.mrtnh.luminor_test.service.QueryService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -34,22 +33,17 @@ public class LuminorController {
     QueryService queryService;
 
     @PostMapping("/createPayment")
-    public Payment createPayment(@RequestBody @Valid Payment payment, BindingResult bindingResult, HttpServletRequest request) {
+    public Payment createPayment(@RequestBody @Valid Payment payment, HttpServletRequest request) {
         log.info("Call for payment creation");
         log.info(payment.toString());
 
-        if (bindingResult.hasErrors()) {
-            log.error("Constraint violation"); // TODO: send readable error message
-            return null;
-        }
-        paymentService.logClientCountry(request);
-        Payment response = paymentService.processPayment(payment);
+        Payment response = paymentService.processPayment(payment, request);
         log.info("Sending response: " + response);
         return response;
     }
 
     @PostMapping("/cancelPayment")
-    public CancellationResponse cancelPayment(@RequestBody @Valid CancellationRequest cancellationRequest, BindingResult bindingResult) {
+    public CancellationResponse cancelPayment(@RequestBody @Valid CancellationRequest cancellationRequest) {
         log.info("Call for payment cancellation");
         log.info(cancellationRequest.toString());
 
@@ -59,17 +53,17 @@ public class LuminorController {
     }
 
     @PostMapping("/queryAllPayments")
-    public QueryAllResponse queryAllPayments(@RequestBody @Valid QueryAllRequest query, BindingResult bindingResult) {
+    public QueryAllResponse queryAllPayments(@RequestBody @Valid QueryAllRequest query) {
         log.info("Call for all payments query");
         log.info(query.toString());
 
         QueryAllResponse response = queryService.queryAllPaymentUuids(query);
-        log.info("Sending response: " + response);
+        log.info("Sending response. Payments in list " + response.getListOfPaymentUuids().size());
         return response;
     }
 
     @PostMapping("/queryPaymentByUuid")
-    public QueryResponse queryPaymentByUuid(@RequestBody @Valid QueryRequest query, BindingResult bindingResult) {
+    public QueryResponse queryPaymentByUuid(@RequestBody @Valid QueryRequest query) {
         log.info("Call for payment query");
         log.info(query.toString());
 
@@ -77,6 +71,4 @@ public class LuminorController {
         log.info("Sending response: " + response);
         return response;
     }
-
-
 }

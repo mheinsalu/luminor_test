@@ -4,6 +4,7 @@ import ee.mrtnh.luminor_test.model.payment.notification.NotificationRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
+import org.springframework.lang.Nullable;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
@@ -56,13 +57,12 @@ public class Client {
         } else if (notificationRequest.getPaymentType().equalsIgnoreCase("PaymentType2")) {
             return notificationURL + "PaymentType2/" + "{uuid}";
         }
-        String message = "Could not send notification. Incompatible payment type";
+        String message = "Could not send notification. Incompatible payment type (must be type 1 or 2)";
         log.error(message);
         throw new InputMismatchException(message);
     }
 
     private HttpHeaders createHeaders() {
-        log.info("Creating Http headers for Client");
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
@@ -70,7 +70,7 @@ public class Client {
     }
 
     @Async
-    public boolean sendIp(String ip) {
+    public Boolean sendIp(String ip) {
         try {
             String requestUrl = "http://www.geoplugin.net/json.gp?ip=" + ip;
 
@@ -79,13 +79,38 @@ public class Client {
             HttpEntity<String> entity = new HttpEntity<>(headers);
             RestTemplate restTemplate = new RestTemplate();
             // Send request with GET method and Headers.
-            log.info("Sending IP");
+            log.info("Sending IP to external geolocation service");
             ResponseEntity<String> response = restTemplate.exchange(requestUrl, HttpMethod.GET, entity, String.class);
-            log.info("IP sent. Response is " + response);
+            if (response.getBody() == null) {
+                log.info("IP query response body is null");
+                return false;
+            }
+            String countryName = getCountryNameFromIpResponse(response.getBody());
+            log.info("IP sent. Country is " + countryName);
             return true;
         } catch (Exception e) {
             log.error("Could not send IP to location service");
         }
         return false;
+    }
+
+    @Nullable
+    private String getCountryNameFromIpResponse(String response) {
+        String[] splitLines = response.split(",");
+        for (String line : splitLines) {
+            if (line.contains("geoplugin_countryName")) {
+                return getLineValueFromLine(line);
+            }
+        }
+        log.info("Could not find country name in response to IP query");
+        return null;
+    }
+
+    private String getLineValueFromLine(String line) {
+        String[] splitLine = line.split(":");
+        if (splitLine.length == 2) {
+            return splitLine[1];
+        }
+        return null;
     }
 }

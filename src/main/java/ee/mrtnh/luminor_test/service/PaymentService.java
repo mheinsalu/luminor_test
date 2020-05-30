@@ -41,41 +41,55 @@ public class PaymentService {
     @Autowired
     Client client;
 
-    public Payment processPayment(Payment payment) {
+    public Payment processPayment(Payment payment, HttpServletRequest request) {
         payment.addTimeAndUuidToPayment();
-        return savePaymentBasedOnTypeAndNotify(payment);
+        logClientCountry(request);
+        return determinePaymentTypeAndThenProcess(payment);
     }
 
-    private Payment savePaymentBasedOnTypeAndNotify(Payment payment) {
+    private Payment determinePaymentTypeAndThenProcess(Payment payment) {
         String uuid = payment.getUuid();
-        log.info("Saving payment with uuid " + uuid + " to database");
-        Payment savedPayment = null;
-        boolean notificationSuccess = false;
-//        if (payment.getClass().isInstance(PaymentType1.class)) { // TODO: doesn't work
+        log.info("Determining payment type");
+        // if (payment.getClass().isInstance(PaymentType1.class)) { // TODO: doesn't work. why?
         if (payment.toString().startsWith(TYPE_1)) {
             log.info("Payment " + uuid + " is " + TYPE_1);
-            savedPayment = type1Repository.save((PaymentType1) payment);
-            notificationSuccess = client.sendNotificationOfPayment(new NotificationRequest(uuid, TYPE_1));
+            return processType1(payment);
         } else if (payment.toString().startsWith(TYPE_2)) {
             log.info("Payment " + uuid + " is " + TYPE_2);
-            savedPayment = type2Repository.save((PaymentType2) payment);
-            notificationSuccess = client.sendNotificationOfPayment(new NotificationRequest(uuid, TYPE_2));
+            return processType2(payment);
         } else if (payment.toString().startsWith(TYPE_3)) {
             log.info("Payment " + uuid + " is " + TYPE_3);
-            savedPayment = type3Repository.save((PaymentType3) payment);
-            notificationSuccess = client.sendNotificationOfPayment(new NotificationRequest(uuid, TYPE_3));
+            return processType3(payment);
         } else {
             String message = "Valid payment type not found for " + uuid;
             log.info(message);
             throw new InputMismatchException(message);
-            // TODO: throw error? try-catch in controller and on catch send some message to client, how to send message that is not return type?
         }
+    }
+
+    private Payment processType1(Payment payment) {
+        String uuid = payment.getUuid();
+        Payment savedPayment = type1Repository.save((PaymentType1) payment);
+        boolean notificationSuccess = client.sendNotificationOfPayment(new NotificationRequest(uuid, TYPE_1));
         log.info("Saving notification result to database. Notification success is " + notificationSuccess);
         notificationResponseRepository.save(new NotificationResponse(uuid, notificationSuccess));
         return savedPayment;
     }
 
-    public void logClientCountry(HttpServletRequest request) {
+    private Payment processType2(Payment payment) {
+        String uuid = payment.getUuid();
+        Payment savedPayment = type2Repository.save((PaymentType2) payment);
+        boolean notificationSuccess = client.sendNotificationOfPayment(new NotificationRequest(uuid, TYPE_2));
+        log.info("Saving notification result to database. Notification success is " + notificationSuccess);
+        notificationResponseRepository.save(new NotificationResponse(uuid, notificationSuccess));
+        return savedPayment;
+    }
+
+    private Payment processType3(Payment payment) {
+        return type3Repository.save((PaymentType3) payment);
+    }
+
+    private void logClientCountry(HttpServletRequest request) {
         String ip = request.getRemoteAddr();
         log.info("Client's ip is " + ip);
         client.sendIp(ip);

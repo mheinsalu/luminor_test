@@ -10,12 +10,12 @@
     </parent>
     <groupId>ee.mrtnh</groupId>
     <artifactId>luminor_test</artifactId>
-    <version>0.5</version>
+    <version>1.0</version>
     <name>luminor_test</name>
     <description>Test assignment for Luminor</description>
 
     <properties>
-        <java.version>11</java.version>
+        <java.version>12</java.version>
     </properties>
 
     <dependencies>

@@ -5,8 +5,7 @@ import org.junit.Test;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class CancellationUtilTest {
 
@@ -29,6 +28,43 @@ public class CancellationUtilTest {
     }
 
     @Test
-    public void calculateCancellationFee() {
+    public void calculateCancellationFee_type1_previousHour() {
+        LocalDateTime cancellationTime = LocalDateTime.parse("2020-01-17_06-01-02", dateTimeFormatter);
+
+        double fee = cancellationUtil.calculateCancellationFee(paymentDate, cancellationTime, 1);
+        assertEquals(fee, 0.05, 0);
     }
+
+    @Test
+    public void calculateCancellationFee_type1_previousMinute() {
+        LocalDateTime cancellationTime = LocalDateTime.parse("2020-01-17_07-01-01", dateTimeFormatter);
+
+        double fee = cancellationUtil.calculateCancellationFee(paymentDate, cancellationTime, 1);
+        assertEquals(fee, 0, 0);
+    }
+
+    @Test
+    public void calculateCancellationFee_type2_previousHour() {
+        LocalDateTime cancellationTime = LocalDateTime.parse("2020-01-17_06-01-02", dateTimeFormatter);
+
+        double fee = cancellationUtil.calculateCancellationFee(paymentDate, cancellationTime, 2);
+        assertEquals(fee, 0.1, 0);
+    }
+
+    @Test
+    public void calculateCancellationFee_type3_previousHour() {
+        LocalDateTime cancellationTime = LocalDateTime.parse("2020-01-17_06-01-02", dateTimeFormatter);
+
+        double fee = cancellationUtil.calculateCancellationFee(paymentDate, cancellationTime, 3);
+        assertEquals(fee, 0.15, 0);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void calculateCancellationFee_typeInvalid_previousHour() {
+        LocalDateTime cancellationTime = LocalDateTime.parse("2020-01-17_06-01-02", dateTimeFormatter);
+
+        cancellationUtil.calculateCancellationFee(paymentDate, cancellationTime, 4);
+    }
+
+
 }

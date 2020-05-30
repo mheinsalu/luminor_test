@@ -60,13 +60,15 @@ public class QueryService {
 
     private List<Payment> filterListOfPaymentsByAmount(List<Payment> listOfPayments, QueryAllRequest queryAllRequest) {
         log.info("Filtering list of payments by amount");
-        if (queryAllRequest.getLargerThanAmountFilter() != null) {
-            log.info("Filtering list of payments by amount: larger than");
-            listOfPayments = listOfPayments.stream().filter(payment -> payment.getAmount() >= queryAllRequest.getLargerThanAmountFilter()).collect(Collectors.toList());
+        Integer largerThan = queryAllRequest.getLowerLimit();
+        if (largerThan != null) {
+            log.info("Filtering list of payments by amount: larger than " + largerThan);
+            listOfPayments = listOfPayments.stream().filter(payment -> payment.getAmount() >= largerThan).collect(Collectors.toList());
         }
-        if (queryAllRequest.getSmallerThanAmountFilter() != null) {
-            log.info("Filtering list of payments by amount: smaller than");
-            listOfPayments = listOfPayments.stream().filter(payment -> payment.getAmount() <= queryAllRequest.getSmallerThanAmountFilter()).collect(Collectors.toList());
+        Integer smallerThan = queryAllRequest.getUpperLimit();
+        if (smallerThan != null) {
+            log.info("Filtering list of payments by amount: smaller than " + smallerThan);
+            listOfPayments = listOfPayments.stream().filter(payment -> payment.getAmount() <= smallerThan).collect(Collectors.toList());
         }
         return listOfPayments;
     }
@@ -77,6 +79,7 @@ public class QueryService {
         log.info("Processing query with uuid " + uuid);
         QueryResponse returnMessage = new QueryResponse();
         returnMessage.setUuid(uuid);
+
         PaymentType1 payment1 = type1Repository.findByUuid(uuid);
         if (payment1 != null) {
             log.info("Found payment of type 1");

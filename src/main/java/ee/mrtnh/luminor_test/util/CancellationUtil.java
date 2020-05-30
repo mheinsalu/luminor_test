@@ -16,7 +16,7 @@ public class CancellationUtil {
     }
 
     public double calculateCancellationFee(LocalDateTime paymentDateTime, LocalDateTime cancellationTime, int paymentType) {
-        int hoursInSystem = cancellationTime.getHour() - paymentDateTime.getHour();
+        int hoursInSystem = Math.abs(cancellationTime.getHour() - paymentDateTime.getHour());
         double coefficient;
         if (paymentType == 1) {
             coefficient = 0.05;
