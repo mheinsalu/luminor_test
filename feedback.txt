@@ -1,0 +1,10 @@
+Here is a summarized feedback version that has been received from our Senior Developer:
+
+  API design - API could be more RESTful, POST /cancelPayment is usually declared as DELETE /payment etc;
+  It would make sense to make Entity creation/update date fields of type Instant (or similar), not String;
+  Double is not preferable type for storing money amount;
+  Separate exception type and handling logic is preferable for business errors, e.g. ValidationException;
+  Type-casting domain entities is something that should definitely be avoided;
+  External service notification could be done async;
+
+Overall, we can see, that you do have a technical understanding of how to stich the application together, but the code is too hard to read.
